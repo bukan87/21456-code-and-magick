@@ -28,6 +28,35 @@ var getRandom = function (min, max) {
 };
 
 /**
+ * Отрисовка прямоугольника в указанном объекте canvas по указанным координатам
+ * @param {object} ctx    объект canvas
+ * @param {number} x      координата по оси X
+ * @param {number} y      координата по оси Y
+ * @param {number} width  ширина прямоугольника
+ * @param {number} height высота прямоугольника
+ * @param {string} color  цвет заливки прямоугольника (по умолчанию белый)
+ */
+var printRectangle = function (ctx, x, y, width, height, color) {
+  ctx.fillStyle = color || 'white';
+  ctx.fillRect(x, y, width, height);
+};
+
+/**
+ * Печать текста в указанном объекте
+ * @param {object} ctx      объект canvas
+ * @param {string} text     печатемый текст
+ * @param {number} x        координата печати по оси X
+ * @param {number} y        координата печати по оси Y
+ * @param {number} fontSize размер шрифта
+ * @param {string} color    цвет шрифта
+ */
+var printText = function (ctx, text, x, y, fontSize, color) {
+  ctx.fillStyle = color || 'black';
+  ctx.font = fontSize + 'px PT Mono';
+  ctx.fillText(text, x, y);
+};
+
+/**
  * Отрисовка таблицы результатов
  * @param {object}   ctx   объект canvas
  * @param {string[]} names массив имён игроков
@@ -41,14 +70,10 @@ window.renderStatistics = function (ctx, names, times) {
   var margin = 34;
   var fontSize = 16;
   // Тень
-  ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
-  ctx.fillRect(baseX + 10, baseY + 10, width, height);
-  ctx.fillStyle = 'rgba(256, 256, 256, 1.0)';
-  ctx.fillRect(baseX, baseY, width, height);
-  ctx.font = fontSize + 'px PT Mono';
-  ctx.fillStyle = 'black';
-  ctx.fillText('Ура вы победили!', baseX + margin, baseY + margin);
-  ctx.fillText('Список результатов:', baseX + margin, baseY + margin + fontSize);
+  printRectangle(ctx, baseX + 10, baseY + 10, width, height, 'rgba(0, 0, 0, 0.7)');
+  printRectangle(ctx, baseX, baseY, width, height);
+  printText(ctx, 'Ура вы победили!', baseX + margin, baseY + margin, fontSize);
+  printText(ctx, 'Список результатов:', baseX + margin, baseY + margin + fontSize, fontSize);
   // Гистограмма
   var chartHeight = 150;
   var chartStartY = baseY + margin + fontSize * 2;
@@ -63,16 +88,13 @@ window.renderStatistics = function (ctx, names, times) {
     var columnStartY = chartStartY + chartHeight - columnHeight;
     var columnStartX = baseX + margin + (columnWidth * i) + (betweenColumnSpace * i);
     if (names[i].toString() === 'Вы') {
-      ctx.fillStyle = 'rgba(255, 0, 0, 1)';
+      printRectangle(ctx, columnStartX, columnStartY + textMargin, columnWidth, columnHeight, 'rgba(255, 0, 0, 1)');
     } else {
-      ctx.fillStyle = 'rgba(0, 0, 255, ' + getRandom(0.1, 1) + ')';
+      printRectangle(ctx, columnStartX, columnStartY + textMargin, columnWidth, columnHeight, 'rgba(0, 0, 255, ' + getRandom(0.1, 1) + ')');
     }
-    // Столбцы
-    ctx.fillRect(columnStartX, columnStartY + textMargin, columnWidth, columnHeight);
-    ctx.fillStyle = 'black';
     // Надписи над столбцами с результатами
-    ctx.fillText(Math.round(times[i]).toString(), columnStartX, columnStartY);
+    printText(ctx, Math.round(times[i]).toString(), columnStartX, columnStartY, fontSize);
     // Подписи под столбцами с именами игроков
-    ctx.fillText(names[i].toString(), columnStartX, chartStartY + chartHeight + fontSize + textMargin);
+    printText(ctx, names[i].toString(), columnStartX, chartStartY + chartHeight + fontSize + textMargin, fontSize);
   }
 };
