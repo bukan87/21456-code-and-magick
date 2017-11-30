@@ -130,7 +130,16 @@ closeSetupButton.addEventListener('keydown', function (evt) {
   }
 });
 setup.querySelector('.setup-submit').addEventListener('click', function () {
-  closeSetup();
+  var isFormCorrect = true;
+  var formInputs = setup.querySelectorAll('input');
+  for (var i = 0; i < formInputs.length; i++) {
+    if (!formInputs[i].validity.valid) {
+      isFormCorrect = false;
+    }
+  }
+  if (isFormCorrect) {
+    setup.querySelector('.setup-wizard-form').submit();
+  }
 });
 // Изменение цветов
 var playerCoat = setup.querySelector('.setup-wizard .wizard-coat');
