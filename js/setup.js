@@ -1,5 +1,12 @@
 'use strict';
-
+var WIZARDS_COUNT = 4;
+var COAT_COLORS = ['rgb(101, 137, 164)', 'rgb(241, 43, 107)', 'rgb(146, 100, 161)', 'rgb(56, 159, 117)', 'rgb(215, 210, 55)', 'rgb(0, 0, 0)'];
+var EYES_COLORS = ['black', 'red', 'blue', 'yellow', 'green'];
+var FIREBALL_COLORS = ['#ee4830', '#30a8ee', '#5ce6c0', '#e848d5', '#e6e848'];
+var KEYCODES = {
+  ESC: 27,
+  ENTER: 13
+};
 /**
  * Генерация случайного числа в диапозоне
  * @param {number} min минимальное значение
@@ -26,8 +33,6 @@ var getRandomItem = function (arr) {
 var getRandomWizard = function () {
   var FIRST_NAMES = ['Иван', 'Хуан Себастьян', 'Мария', 'Кристоф', 'Виктор', 'Юлия', 'Люпита', 'Вашингтон'];
   var LAST_NAMES = ['да Марья', 'Верон', 'Мирабелла', 'Вальц', 'Онопко', 'Топольницкая', 'Нионго', 'Ирвинг'];
-  var COAT_COLORS = ['rgb(101, 137, 164)', 'rgb(241, 43, 107)', 'rgb(146, 100, 161)', 'rgb(56, 159, 117)', 'rgb(215, 210, 55)', 'rgb(0, 0, 0)'];
-  var EYES_COLORS = ['black', 'red', 'blue', 'yellow', 'green'];
   return {
     name: getRandomItem(FIRST_NAMES) + ' ' + getRandomItem(LAST_NAMES),
     coatColor: getRandomItem(COAT_COLORS),
@@ -76,9 +81,71 @@ var getSimilarWizardsFragment = function (wizards) {
 };
 
 var setup = document.querySelector('.setup');
-setup.classList.remove('hidden');
+
+/**
+ * Закрытие окна настроек по нажатию кнопки Esc
+ * @param {Object} evt Контекс события
+ * @constructor
+ */
+var OnSetupEscPress = function (evt) {
+  if (evt.keyCode === KEYCODES.ESC && !evt.target.classList.contains('setup-user-name')) {
+    closeSetup();
+  }
+};
+
+/**
+ * Отображение меню настроек
+ */
+var showSetup = function () {
+  setup.classList.remove('hidden');
+  document.addEventListener('keydown', OnSetupEscPress);
+};
+
+/**
+ * Закрытие меню настроек
+ */
+var closeSetup = function () {
+  setup.classList.add('hidden');
+  document.removeEventListener('keydown', OnSetupEscPress);
+};
+
+var openSetupButton = document.querySelector('.setup-open');
+// Открыте меню настроек
+openSetupButton.addEventListener('click', function () {
+  showSetup();
+});
+openSetupButton.addEventListener('keydown', function (evt) {
+  if (evt.keyCode === KEYCODES.ENTER) {
+    showSetup();
+  }
+});
+// Закрытие меню натсроек
+var closeSetupButton = setup.querySelector('.setup-close');
+closeSetupButton.addEventListener('click', function () {
+  closeSetup();
+});
+closeSetupButton.addEventListener('keydown', function (evt) {
+  if (evt.keyCode === KEYCODES.ENTER) {
+    closeSetup();
+  }
+});
+setup.querySelector('.setup-submit').addEventListener('click', function () {
+  closeSetup();
+});
+// Изменение цветов
+var playerCoat = setup.querySelector('.setup-wizard .wizard-coat');
+playerCoat.addEventListener('click', function () {
+  playerCoat.style.fill = getRandomItem(COAT_COLORS);
+});
+var playerEyes = setup.querySelector('.setup-wizard .wizard-eyes');
+playerEyes.addEventListener('click', function () {
+  playerEyes.style.fill = getRandomItem(EYES_COLORS);
+});
+var playerFireball = setup.querySelector('.setup-fireball-wrap');
+playerFireball.addEventListener('click', function () {
+  playerFireball.style.backgroundColor = getRandomItem(FIREBALL_COLORS);
+});
 // Сгенерируем волшебников
-var WIZARDS_COUNT = 4;
 var wizards = generateWizards(WIZARDS_COUNT);
 // Добавим волшебников в интерфейс
 var similarWizards = setup.querySelector('.setup-similar-list');
