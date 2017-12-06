@@ -5,6 +5,10 @@
     ESC: 27,
     ENTER: 13
   };
+  var DEFAULT_SETUP_POSITION = {
+    left: '50%',
+    top: '80px'
+  };
   var root = document.querySelector('.setup');
   /**
    * Закрытие окна настроек по нажатию кнопки Esc
@@ -18,9 +22,18 @@
   };
 
   /**
+   * Установка окна настроек в позицию по умолчанию
+   */
+  var setPositionDefault = function () {
+    root.style.left = DEFAULT_SETUP_POSITION.left;
+    root.style.top = DEFAULT_SETUP_POSITION.top;
+  };
+
+  /**
    * Отображение меню настроек
    */
   var showSetup = function () {
+    setPositionDefault();
     root.classList.remove('hidden');
     document.addEventListener('keydown', OnSetupEscPress);
   };
@@ -31,6 +44,19 @@
   var closeSetup = function () {
     root.classList.add('hidden');
     document.removeEventListener('keydown', OnSetupEscPress);
+  };
+
+  /**
+   * Проверка дом элемента на возможность положить в него предмет инвентаря
+   * @param {Element} element проверяемы dom-элемент
+   * @return {boolean} признак возможности положить
+   */
+  var canDropItem = function (element) {
+    if (element.tagName.toLowerCase() !== 'img' && element.childNodes.length === 0) {
+      return true;
+    } else {
+      return false;
+    }
   };
 
   var openSetupButton = document.querySelector('.setup-open');
@@ -78,6 +104,50 @@
   playerFireball.addEventListener('click', function () {
     playerFireball.style.backgroundColor = window.util.getRandomItem(window.setup.FIREBALL_COLORS);
   });
+  // Drag'n'Drop в магазине
+  var shop = root.querySelector('.setup-artifacts-shop');
+  var playerInventory = root.querySelector('.setup-artifacts');
+  if (shop && playerInventory) {
+    var draggedItem = null;
+    shop.addEventListener('dragstart', function (evt) {
+      if (evt.target.tagName.toLowerCase() === 'img') {
+        draggedItem = evt.target;
+        evt.dataTransfer.setData('text/plain', 'shop');
+      }
+    });
+    playerInventory.addEventListener('dragover', function (evt) {
+      evt.preventDefault();
+      return false;
+    });
+    playerInventory.addEventListener('dragstart', function (evt) {
+      if (evt.target.tagName.toLowerCase() === 'img') {
+        draggedItem = evt.target;
+        evt.dataTransfer.setData('text/plain', 'inventory');
+      }
+    });
+    playerInventory.addEventListener('drop', function (evt) {
+      evt.target.style.backgroundColor = '';
+      if (canDropItem(evt.target)) {
+        if (evt.dataTransfer.getData('text/plain') === 'shop') {
+          evt.target.appendChild(draggedItem.cloneNode(true));
+        } else {
+          evt.target.appendChild(draggedItem);
+        }
+      }
+      draggedItem = null;
+      evt.preventDefault();
+    });
+    playerInventory.addEventListener('dragenter', function (evt) {
+      if (canDropItem(evt.target)) {
+        evt.target.style.backgroundColor = 'yellow';
+        evt.preventDefault();
+      }
+    });
+    playerInventory.addEventListener('dragleave', function (evt) {
+      evt.target.style.backgroundColor = '';
+      evt.preventDefault();
+    });
+  }
   window.setup = {
     COAT_COLORS: ['rgb(101, 137, 164)', 'rgb(241, 43, 107)', 'rgb(146, 100, 161)', 'rgb(56, 159, 117)', 'rgb(215, 210, 55)', 'rgb(0, 0, 0)'],
     EYES_COLORS: ['black', 'red', 'blue', 'yellow', 'green'],
