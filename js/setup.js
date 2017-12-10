@@ -9,6 +9,9 @@
     left: '50%',
     top: '80px'
   };
+  var COAT_COLORS = ['rgb(101, 137, 164)', 'rgb(241, 43, 107)', 'rgb(146, 100, 161)', 'rgb(56, 159, 117)', 'rgb(215, 210, 55)', 'rgb(0, 0, 0)'];
+  var EYES_COLORS = ['black', 'red', 'blue', 'yellow', 'green'];
+  var FIREBALL_COLORS = ['#ee4830', '#30a8ee', '#5ce6c0', '#e848d5', '#e6e848'];
   var root = document.querySelector('.setup');
   /**
    * Закрытие окна настроек по нажатию кнопки Esc
@@ -59,6 +62,24 @@
     }
   };
 
+  /**
+   * Изменение цвета элемента
+   * @param {Element} element элемент, у которого изменяется цвет
+   * @param {string} color цвет, который необходим применить
+   */
+  var fillElement = function (element, color) {
+    element.style.fill = color;
+  };
+
+  /**
+   * Изменение цвета фона у элемента
+   * @param {Element} element элемент, у которого изменяется цвет фона
+   * @param {string} color цвет, который необходим применить
+   */
+  var changeElementBackground = function (element, color) {
+    element.style.backgroundColor = color;
+  };
+
   var openSetupButton = document.querySelector('.setup-open');
   // Открыте меню настроек
   openSetupButton.addEventListener('click', function () {
@@ -93,17 +114,11 @@
   });
   // Изменение цветов
   var playerCoat = root.querySelector('.setup-wizard .wizard-coat');
-  playerCoat.addEventListener('click', function () {
-    playerCoat.style.fill = window.util.getRandomItem(window.setup.COAT_COLORS);
-  });
+  window.colorizeElement(playerCoat, COAT_COLORS, fillElement);
   var playerEyes = root.querySelector('.setup-wizard .wizard-eyes');
-  playerEyes.addEventListener('click', function () {
-    playerEyes.style.fill = window.util.getRandomItem(window.setup.EYES_COLORS);
-  });
+  window.colorizeElement(playerEyes, EYES_COLORS, fillElement);
   var playerFireball = root.querySelector('.setup-fireball-wrap');
-  playerFireball.addEventListener('click', function () {
-    playerFireball.style.backgroundColor = window.util.getRandomItem(window.setup.FIREBALL_COLORS);
-  });
+  window.colorizeElement(playerFireball, FIREBALL_COLORS, changeElementBackground);
   // Drag'n'Drop в магазине
   var shop = root.querySelector('.setup-artifacts-shop');
   var playerInventory = root.querySelector('.setup-artifacts');
@@ -149,9 +164,9 @@
     });
   }
   window.setup = {
-    COAT_COLORS: ['rgb(101, 137, 164)', 'rgb(241, 43, 107)', 'rgb(146, 100, 161)', 'rgb(56, 159, 117)', 'rgb(215, 210, 55)', 'rgb(0, 0, 0)'],
-    EYES_COLORS: ['black', 'red', 'blue', 'yellow', 'green'],
-    FIREBALL_COLORS: ['#ee4830', '#30a8ee', '#5ce6c0', '#e848d5', '#e6e848'],
+    COAT_COLORS: COAT_COLORS,
+    EYES_COLORS: EYES_COLORS,
+    FIREBALL_COLORS: FIREBALL_COLORS,
     root: root
   };
 }());
